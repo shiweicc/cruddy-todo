@@ -31,10 +31,26 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  var data = [];
+  fs.readdir(exports.dataDir, (err, files) => {
+    console.log('files: ', files);
+    if (err) {
+      console.log('Cannot read directory.');
+    } else {
+
+      _.each(files, file => {
+        //00001.txt;
+        var id = file.slice(0, 5);
+        data.push({id, text: id});
+      });
+
+      callback(null, data);
+    }
   });
-  callback(null, data);
+  // var data = _.map(items, (text, id) => {
+  //   return { id, text };
+  // });
+  // callback(null, data);
 };
 
 exports.readOne = (id, callback) => {

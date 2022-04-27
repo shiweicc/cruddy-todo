@@ -37,7 +37,7 @@ const writeCounter = (count, callback) => {
 };
 
 // Public API - Fix this function //////////////////////////////////////////////
-// readCounter(err, counter)???
+
 exports.getNextUniqueId = (callback) => {
   readCounter((err, counter) => {
     if (err) {
@@ -52,10 +52,7 @@ exports.getNextUniqueId = (callback) => {
         }
       });
     }
-
   });
-
-
   // counter = counter + 1;
   // return zeroPaddedNumber(counter);
 };

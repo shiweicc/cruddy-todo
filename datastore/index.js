@@ -15,7 +15,7 @@ exports.create = (text, callback) => {
     if (err) {
       console.log('Cannot get unique id.');
     } else {
-      var filePath = `./test/testData/${id}.txt`;
+      var filePath = exports.dataDir + `/${id}.txt`;
       fs.writeFile(filePath, text, (err) => {
         if (err) {
           console.log('Cannot write file path.');

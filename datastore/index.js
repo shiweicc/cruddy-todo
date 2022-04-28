@@ -72,11 +72,11 @@ exports.readOne = (id, callback) => {
 
 exports.update = (id, text, callback) => {
   var filePath = exports.dataDir + `/${id}.txt`;
+  // data in the callback is optional, since we don't use the data in the following function
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       callback(new Error(`No item with id: ${id}`));
     } else {
-
       fs.writeFile(filePath, text, (err) => {
         if (err) {
           console.log('Cannot update the file.');
@@ -96,14 +96,28 @@ exports.update = (id, text, callback) => {
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+  var filePath = exports.dataDir + `/${id}.txt`;
+  fs.readFile(filePath, 'utf8', (err) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          callback(new Error(`No item with id: ${id}`));
+        } else {
+          callback();
+        }
+      });
+    }
+  });
+  // var item = items[id];
+  // delete items[id];
+  // if (!item) {
+  //   // report an error if item not found
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback();
+  // }
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////

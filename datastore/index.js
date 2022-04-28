@@ -7,6 +7,7 @@ var items = {};
 /*
 Questions:
 var filePath = `./test/testData/${id}.txt`; ???
+update function: using readOne function
 */
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
@@ -70,13 +71,28 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
+  var filePath = exports.dataDir + `/${id}.txt`;
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+
+      fs.writeFile(filePath, text, (err) => {
+        if (err) {
+          console.log('Cannot update the file.');
+        } else {
+          callback(null, {id, text});
+        }
+      });
+    }
+  });
+  // var item = items[id];
+  // if (!item) {
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   items[id] = text;
+  //   callback(null, { id, text });
+  // }
 };
 
 exports.delete = (id, callback) => {

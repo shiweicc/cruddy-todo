@@ -4,11 +4,14 @@ const _ = require('underscore');
 const counter = require('./counter');
 
 var items = {};
+
 /*
 Questions:
-var filePath = `./test/testData/${id}.txt`; ???
-update function: using readOne function
+Q1: var filePath = `./test/testData/${id}.txt`; VS `../test/testData/${id}.txt`; ???
+Q2: update function: using readOne function, then how to check if readOnereturn an err or succuss
+Q3: for promisify, what's difference between using Promisify or not, since they are both Async functions
 */
+
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
@@ -34,7 +37,6 @@ exports.create = (text, callback) => {
 exports.readAll = (callback) => {
   var data = [];
   fs.readdir(exports.dataDir, (err, files) => {
-    console.log('files: ', files);
     if (err) {
       console.log('Cannot read directory.');
     } else {
@@ -72,8 +74,7 @@ exports.readOne = (id, callback) => {
 
 exports.update = (id, text, callback) => {
   var filePath = exports.dataDir + `/${id}.txt`;
-  // data in the callback is optional, since we don't use the data in the following function
-  fs.readFile(filePath, 'utf8', (err, data) => {
+  exports.readOne(id, (err, id) => {
     if (err) {
       callback(new Error(`No item with id: ${id}`));
     } else {
@@ -86,6 +87,22 @@ exports.update = (id, text, callback) => {
       });
     }
   });
+
+  // data in the callback is optional, since we don't use the data in the following function
+  // fs.readFile(filePath, 'utf8', (err, data) => {
+  //   if (err) {
+  //     callback(new Error(`No item with id: ${id}`));
+  //   } else {
+  //     fs.writeFile(filePath, text, (err) => {
+  //       if (err) {
+  //         console.log('Cannot update the file.');
+  //       } else {
+  //         callback(null, {id, text});
+  //       }
+  //     });
+  //   }
+  // });
+
   // var item = items[id];
   // if (!item) {
   //   callback(new Error(`No item with id: ${id}`));

@@ -4,6 +4,7 @@ const _ = require('underscore');
 const counter = require('./counter');
 const fsPromises = require('fs').promises;
 const Promise = require('bluebird');
+const fsPromisify = Promise.promisifyAll(fs);
 
 var items = {};
 
@@ -37,21 +38,22 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var dataPromises = []; //[{id, text_promise}]
-  fsPromises.readdir(exports.dataDir)
-    .then(files => files.forEach(
-      function(file) {
+  // var dataPromises = []; //[{id, text_promise}]
+  return fsPromisify.readdirAsync(exports.dataDir)
+    .then(files => {
+      return Promise.all(files.map(file => {
         var id = file.slice(0, 5);
-        fsPromises.readFile(exports.dataDir + `/${id}.txt`, 'utf8')
-          .then (function(text) {
-            dataPromises.push({id, text});
-          });
-      }
-    ));
-  Promise.all(dataPromises)
-    .then(function(data) {
-      return callback(null, data);
-    });
+        return fsPromisify.readFileAsync(exports.dataDir + `/${id}.txt`, 'utf8').then ((todo) => { return {id, text: todo}; });
+
+      }));
+    }).then((data) => {
+
+
+      callback(null, data);
+
+    })
+    .catch(err => callback('error'));
+
 
 
   // fsPromises.readdir(exports.dataDir, (err, files) => {

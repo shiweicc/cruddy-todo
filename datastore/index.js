@@ -2,15 +2,17 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
+const fsPromises = require('fs').promises;
+const Promise = require('bluebird');
 
 var items = {};
 
 /*
 Questions:
 Q1: var filePath = `./test/testData/${id}.txt`; VS `../test/testData/${id}.txt`; ???
-Q2: update function: using readOne function, then how to check if readOnereturn an err or succuss
-Q3: for promisify, what's difference between using Promisify or not, since they are both Async functions
+Q2: for promisify, what's difference between using Promisify or not, since they are both Async functions
 */
+// Q2: update function: using readOne function, then how to check if readOnereturn an err or succuss
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
@@ -35,21 +37,38 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = [];
-  fs.readdir(exports.dataDir, (err, files) => {
-    if (err) {
-      console.log('Cannot read directory.');
-    } else {
-
-      _.each(files, file => {
-        //00001.txt;
+  var dataPromises = []; //[{id, text_promise}]
+  fsPromises.readdir(exports.dataDir)
+    .then(files => files.forEach(
+      function(file) {
         var id = file.slice(0, 5);
-        data.push({id, text: id});
-      });
+        fsPromises.readFile(exports.dataDir + `/${id}.txt`, 'utf8')
+          .then (function(text) {
+            dataPromises.push({id, text});
+          });
+      }
+    ));
+  Promise.all(dataPromises)
+    .then(function(data) {
+      return callback(null, data);
+    });
 
-      callback(null, data);
-    }
-  });
+
+  // fsPromises.readdir(exports.dataDir, (err, files) => {
+  //   if (err) {
+  //     console.log('Cannot read directory.');
+  //   } else {
+
+  //     _.each(files, file => {
+  //       //00001.txt;
+  //       var id = file.slice(0, 5);
+  //       data.push({id, text: id});
+  //     });
+
+  //     callback(null, data);
+  //   }
+  // });
+
   // var data = _.map(items, (text, id) => {
   //   return { id, text };
   // });

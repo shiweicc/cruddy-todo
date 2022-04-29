@@ -52,7 +52,7 @@ exports.readAll = (callback) => {
       callback(null, data);
 
     })
-    .catch(err => callback('error'));
+    .catch(err => console.log('error'));
 
 
 

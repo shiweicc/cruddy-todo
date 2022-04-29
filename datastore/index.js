@@ -37,6 +37,7 @@ exports.create = (text, callback) => {
   // callback(null, { id, text });
 };
 
+// mocha test fixed for the updated function
 exports.readAll = (callback) => {
   // var dataPromises = []; //[{id, text_promise}]
   return fsPromisify.readdirAsync(exports.dataDir)

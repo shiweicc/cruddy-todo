@@ -11,9 +11,7 @@ var items = {};
 /*
 Questions:
 Q1: var filePath = `./test/testData/${id}.txt`; VS `../test/testData/${id}.txt`; ???
-Q2: for promisify, what's difference between using Promisify or not, since they are both Async functions
 */
-// Q2: update function: using readOne function, then how to check if readOnereturn an err or succuss
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
@@ -39,8 +37,7 @@ exports.create = (text, callback) => {
 
 // mocha test fixed for the updated function
 exports.readAll = (callback) => {
-  // var dataPromises = []; //[{id, text_promise}]
-  return fsPromisify.readdirAsync(exports.dataDir)
+  fsPromisify.readdirAsync(exports.dataDir)
     .then(files => {
       return Promise.all(files.map(file => {
         var id = file.slice(0, 5);
@@ -48,15 +45,11 @@ exports.readAll = (callback) => {
 
       }));
     }).then((data) => {
-
-
       callback(null, data);
-
     })
     .catch(err => console.log('error'));
 
-
-
+  // var dataPromises = []; //[{id, text_promise}]
   // fsPromises.readdir(exports.dataDir, (err, files) => {
   //   if (err) {
   //     console.log('Cannot read directory.');
@@ -79,13 +72,22 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  fs.readFile(exports.dataDir + `/${id}.txt`, 'utf8', (err, text) => {
-    if (err) {
-      callback(new Error(`No item with id: ${id}`));
-    } else {
+  fsPromisify.readFileAsync(exports.dataDir + `/${id}.txt`, {encoding: 'utf8'})
+    .then(text => {
       callback(null, { id, text });
-    }
-  });
+    })
+    .catch(err => {
+      callback(new Error(`No item with id: ${id}`));
+    });
+
+  // fs.readFile(exports.dataDir + `/${id}.txt`, 'utf8', (err, text) => {
+  //   if (err) {
+  //     callback(new Error(`No item with id: ${id}`));
+  //   } else {
+  //     callback(null, { id, text });
+  //   }
+  // });
+
   // var text = items[id];
   // if (!text) {
   //   callback(new Error(`No item with id: ${id}`));

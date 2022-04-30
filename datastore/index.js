@@ -98,19 +98,25 @@ exports.readOne = (id, callback) => {
 
 exports.update = (id, text, callback) => {
   var filePath = exports.dataDir + `/${id}.txt`;
-  exports.readOne(id, (err, id) => {
-    if (err) {
-      callback(new Error(`No item with id: ${id}`));
-    } else {
-      fs.writeFile(filePath, text, (err) => {
-        if (err) {
-          console.log('Cannot update the file.');
-        } else {
-          callback(null, {id, text});
-        }
-      });
-    }
-  });
+
+  fsPromises.readFile(filePath, {encoding: 'utf8'})
+    .then(oldText => fsPromises.writeFile(filePath, text))
+    .then (data => callback(null, {id, text}))
+    .catch (err => callback(new Error(`No item with id: ${id}`)));
+
+  // exports.readOne(id, (err, id) => {
+  //   if (err) {
+  //     callback(new Error(`No item with id: ${id}`));
+  //   } else {
+  //     fs.writeFile(filePath, text, (err) => {
+  //       if (err) {
+  //         console.log('Cannot update the file.');
+  //       } else {
+  //         callback(null, {id, text});
+  //       }
+  //     });
+  //   }
+  // });
 
   // data in the callback is optional, since we don't use the data in the following function
   // fs.readFile(filePath, 'utf8', (err, data) => {

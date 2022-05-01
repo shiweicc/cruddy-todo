@@ -53,6 +53,8 @@ exports.getNextUniqueId = (callback) => {
       });
     }
   });
+
+  // Sync:
   // counter = counter + 1;
   // return zeroPaddedNumber(counter);
 };

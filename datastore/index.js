@@ -45,13 +45,13 @@ exports.readAll = (callback) => {
       return Promise.all(files.map(file => {
         var id = file.slice(0, 5);
         return fsPromisify.readFileAsync(exports.dataDir + `/${id}.txt`, 'utf8').then ((todo) => { return {id, text: todo}; });
-
       }));
     }).then((data) => {
       callback(null, data);
     })
     .catch(err => console.log('error'));
 
+  // Callback Async:
   // var dataPromises = []; //[{id, text_promise}]
   // fsPromises.readdir(exports.dataDir, (err, files) => {
   //   if (err) {
@@ -68,6 +68,7 @@ exports.readAll = (callback) => {
   //   }
   // });
 
+  // Sync:
   // var data = _.map(items, (text, id) => {
   //   return { id, text };
   // });
@@ -83,6 +84,7 @@ exports.readOne = (id, callback) => {
       callback(new Error(`No item with id: ${id}`));
     });
 
+  // Callback Async:
   // fs.readFile(exports.dataDir + `/${id}.txt`, 'utf8', (err, text) => {
   //   if (err) {
   //     callback(new Error(`No item with id: ${id}`));
@@ -91,6 +93,7 @@ exports.readOne = (id, callback) => {
   //   }
   // });
 
+  // Sync:
   // var text = items[id];
   // if (!text) {
   //   callback(new Error(`No item with id: ${id}`));
@@ -110,20 +113,7 @@ exports.update = (id, text, callback) => {
     .then (data => callback(null, {id, text: text}))
     .catch (err => callback(new Error(`No item with id: ${id}`)));
 
-  // exports.readOne(id, (err, id) => {
-  //   if (err) {
-  //     callback(new Error(`No item with id: ${id}`));
-  //   } else {
-  //     fs.writeFile(filePath, text, (err) => {
-  //       if (err) {
-  //         console.log('Cannot update the file.');
-  //       } else {
-  //         callback(null, {id, text});
-  //       }
-  //     });
-  //   }
-  // });
-
+  // Callback Async:
   // data in the callback is optional, since we don't use the data in the following function
   // fs.readFile(filePath, 'utf8', (err, data) => {
   //   if (err) {
@@ -139,6 +129,7 @@ exports.update = (id, text, callback) => {
   //   }
   // });
 
+  // Sync:
   // var item = items[id];
   // if (!item) {
   //   callback(new Error(`No item with id: ${id}`));
@@ -163,6 +154,8 @@ exports.delete = (id, callback) => {
       });
     }
   });
+
+  // Sync:
   // var item = items[id];
   // delete items[id];
   // if (!item) {

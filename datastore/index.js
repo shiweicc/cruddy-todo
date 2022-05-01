@@ -40,15 +40,13 @@ exports.create = (text, callback) => {
 
 // mocha test fixed for the updated function
 exports.readAll = (callback) => {
-  fsPromisify.readdirAsync(exports.dataDir)
+  return fsPromisify.readdirAsync(exports.dataDir)
     .then(files => {
       return Promise.all(files.map(file => {
         var id = file.slice(0, 5);
         return fsPromisify.readFileAsync(exports.dataDir + `/${id}.txt`, 'utf8').then ((todo) => { return {id, text: todo}; });
       }));
-    }).then((data) => {
-      callback(null, data);
-    })
+    }).then(data => callback(null, data))
     .catch(err => console.log('error'));
 
   // Callback Async:
@@ -57,13 +55,11 @@ exports.readAll = (callback) => {
   //   if (err) {
   //     console.log('Cannot read directory.');
   //   } else {
-
   //     _.each(files, file => {
   //       //00001.txt;
   //       var id = file.slice(0, 5);
   //       data.push({id, text: id});
   //     });
-
   //     callback(null, data);
   //   }
   // });
@@ -76,13 +72,9 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  fsPromisify.readFileAsync(exports.dataDir + `/${id}.txt`, {encoding: 'utf8'})
-    .then(text => {
-      callback(null, { id, text });
-    })
-    .catch(err => {
-      callback(new Error(`No item with id: ${id}`));
-    });
+  return fsPromisify.readFileAsync(exports.dataDir + `/${id}.txt`, {encoding: 'utf8'})
+    .then(text => callback(null, { id, text }))
+    .catch(err => callback(new Error(`No item with id: ${id}`)));
 
   // Callback Async:
   // fs.readFile(exports.dataDir + `/${id}.txt`, 'utf8', (err, text) => {
